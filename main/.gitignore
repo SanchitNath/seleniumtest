@@ -1,0 +1,6 @@
+venv
+reports/*
+screenshots/*
+logs/*
+testSuite-*
+__pycache__/
