@@ -1,0 +1,7 @@
+TEST0|PASS|test_login|user1
+TEST1|ERROR|test_login|user5
+TEST2|FAIL|test_login|user12
+TEST3|PASS|test_login|user2
+TEST4|PASS|a_login|user3
+TEST5|PASS|a_login|user4
+TEST6|ERROR|a_login|user6

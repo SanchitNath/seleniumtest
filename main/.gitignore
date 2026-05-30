@@ -1,6 +1,10 @@
-venv
+.idea/
+venv/
+venv/.*
 reports/*
 screenshots/*
 logs/*
 testSuite-*
+*.html
 __pycache__/
+.env

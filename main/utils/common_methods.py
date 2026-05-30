@@ -2,7 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
 import time
+
 
 class CommonMethods:
     def __init__(self, driver: webdriver.Chrome):
@@ -51,3 +53,112 @@ class CommonMethods:
     def sleep(self, seconds):
         """Sleep for a specified number of seconds."""
         time.sleep(seconds)
+
+    def check_link_status(self, url):
+        """Check the status of a link."""
+        try:
+            get_response = requests.get(url)
+            response = requests.head(url, allow_redirects=True)
+            return response.status_code
+        except requests.RequestException as e:
+            print(f"Error checking link: {e}")
+            return None
+
+    def check_req_bad_request(self, url):
+        """Check if a link returns a bad request."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 400
+        except requests.RequestException as e:
+            print(f"Error checking bad request: {e}")
+            return False
+
+    def check_req_unauthorized(self, url):
+        """Check if a link returns an unauthorized status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 401
+        except requests.RequestException as e:
+            print(f"Error checking unauthorized request: {e}")
+            return False
+
+    def check_req_payment_required(self, url):
+        """Check if a link returns a payment required status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 402
+        except requests.RequestException as e:
+            print(f"Error checking payment required request: {e}")
+            return False
+
+    def check_req_forbidden(self, url):
+        """Check if a link returns a forbidden status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 403
+        except requests.RequestException as e:
+            print(f"Error checking forbidden request: {e}")
+            return False
+
+    def check_req_not_found(self, url):
+        """Check if a link returns a not found status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 404
+        except requests.RequestException as e:
+            print(f"Error checking not found request: {e}")
+            return False
+
+    def check_req_method_not_allowed(self, url):
+        """Check if a link returns a method not allowed status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 405
+        except requests.RequestException as e:
+            print(f"Error checking method not allowed request: {e}")
+            return False
+
+    def check_req_not_acceptable(self, url):
+        """Check if a link returns a not acceptable status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 406
+        except requests.RequestException as e:
+            print(f"Error checking not acceptable request: {e}")
+            return False
+
+    def check_req_proxy_authentication_required(self, url):
+        """Check if a link returns a proxy authentication required status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 407
+        except requests.RequestException as e:
+            print(f"Error checking proxy authentication required request: {e}")
+            return False
+
+    def check_request_timeout(self, url):
+        """Check if a link returns a request timeout status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 408
+        except requests.RequestException as e:
+            print(f"Error checking request timeout: {e}")
+            return False
+
+    def check_req_conflict(self, url):
+        """Check if a link returns a conflict status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 409
+        except requests.RequestException as e:
+            print(f"Error checking conflict request: {e}")
+            return False
+
+    def check_req_gone(self, url):
+        """Check if a link returns a gone status."""
+        try:
+            response = requests.get(url)
+            return response.status_code == 410
+        except requests.RequestException as e:
+            print(f"Error checking gone request: {e}")
+            return False
