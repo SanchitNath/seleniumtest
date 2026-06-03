@@ -1,0 +1,15 @@
+stage('Check Trigger') {
+    steps {
+        script {
+            // Get the list of causes for this build
+            def causes = currentBuild.getBuildCauses()
+            // Iterate to see if any cause is a 'UserIdCause' (Manual Trigger)
+            for (cause in causes) {
+                if (cause._class.contains("UserIdCause")) {
+                    echo "Check cause_.class ${cause._class}, triggered it manually so exiting now..."
+                    error("⛔ Manual builds are strictly forbidden for this job. Please rely on webhooks/timers.")
+                }
+            }
+        }
+    }
+}

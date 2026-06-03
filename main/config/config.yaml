@@ -2,7 +2,7 @@
 
 browser: "chrome"
 headless: true
-base_url: "http://google.com"
+base_url: "https://www.flipkart.com/"
 implicit_wait: 10
 explicit_wait: 20
 parallel_execution: true
@@ -10,5 +10,5 @@ report_path: "reports/test_report.html"
 log_level: "INFO"
 screenshot_on_failure: true
 screenshot_path: "screenshots/"
-retry_count: 3
+retry_count: 1
 retry_delay: 2

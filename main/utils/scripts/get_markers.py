@@ -117,7 +117,7 @@ def get_markers():
         f"After filtering -> {marker_list[0]}...{marker_list[len(marker_list)-1]} whose length l5={len(marker_list)}"
     )
     # Write all the markers into a text file with seperator as ', '
-    marker_list_path = os.path.join(cwd, "../../data/dsm_data_marker_list.txt")
+    marker_list_path = os.path.join(cwd, "../../data/marker_list.txt")
     with open(marker_list_path, "w") as outfile:
         outfile.write(", ".join(marker_list))
 

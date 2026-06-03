@@ -1,0 +1,45 @@
+stage('Set Parameters') {
+    steps {
+        script {
+            def calendar = Calendar.getInstance()
+            def dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // 1 (Sunday) to 7 (Saturday)
+            echo "Today is: ${dayOfWeek}"
+            dayOfWeek = dayOfWeek - 1
+            echo "Today is: ${dayOfWeek} {dayOfWeek.class}"
+            def currentHour = new Date().format('H') as Integer // Convert to Integer
+            echo "currentHour '${currentHour}'"
+            echo "1TEST_URL => ${env.TEST_URL}"
+            echo "Parameters will be overwritten by the below logic as per the current time"
+            echo "Tests to execute => ${params.TESTS_TO_EXECUTE}"
+            echo "Current Job URL: ${env.BUILD_URL}"
+            if (dayOfWeek%2 == 1) {
+                if (currentHour%2 == 0) {
+                    echo "1st"
+                    // Set parameters for first run
+                    BROWSER_USE = 'Edge'
+                } else {
+                    echo "3rd"
+                    // Set parameters for second run
+                    BROWSER_USE = 'Chrome'
+                }
+            }
+            else {
+                if (currentHour%2 == 0) {
+                    echo "2nd"
+                    // Set parameters for first run
+                    BROWSER_USE = 'Chrome'
+                } else {
+                    echo "4th"
+                    // Set parameters for second run
+                    BROWSER_USE = 'Edge'
+                }
+            }
+            echo "Out"
+            echo "${params.TESTS_TO_EXECUTE}"
+            echo "val => ${TESTS_TO_EXECUTE}"
+            TESTS_TO_EXECUTE = params.TESTS_TO_EXECUTE.tokenize(',')
+            BROWSER = BROWSER_USE
+            echo "TESTS_TO_EXECUTE = ${TESTS_TO_EXECUTE} at currentHour '${currentHour}' in BROWSER ${BROWSER} but browser via param -> '[${params.BROWSER}]"
+        }
+    }
+}

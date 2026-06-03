@@ -1,0 +1,121 @@
+post{
+    always {
+        script {
+             echo "Combining Allure results 📊 into JSON summary (De-duplicated)"
+            echo "Processing results to identify final test statuses..."
+            // 1. Find all result files
+            def files = findFiles(glob: 'reports_new/dsm/reports/*-result.json')
+            if (files.length == 0) {
+                echo "No JSON files found in reports_new"
+            } else {
+                // ---------------------------------------------------------
+                // CORE LOGIC: Filter duplicates to keep only the LATEST run
+                // ---------------------------------------------------------
+                def latestResults = [:] // Map to store unique tests
+                files.each { f ->
+                    def json = readJSON file: f.path
+                    // 'historyId' is unique per test case. If missing, fallback to 'fullName'.
+                    def uniqueId = json.historyId ?: json.fullName
+                    def runTime = json.start ?: 0
+                    // Logic: If we haven't seen this test ID yet, OR if this file is newer (later timestamp)
+                    // than the one we currently have stored, we update the map.
+                    if (!latestResults.containsKey(uniqueId) || runTime > latestResults[uniqueId].start) {
+                        latestResults[uniqueId] = json
+                    }
+                }
+                // 2. Initialize Summary Buckets
+                def summary = [failed: [], broken: [], skipped: []]
+                // 3. Populate summary using ONLY the unique latest results
+                latestResults.each { id, json ->
+                    def status = (json?.status instanceof String) ? json.status.toLowerCase() : "unknown"
+                    def name = json?.name ?: "Unknown Test"
+                    switch (status) {
+                        case 'failed':
+                            summary.failed << name
+                            break
+                        case 'broken':
+                            summary.broken << name
+                            break
+                        case 'skipped':
+                            summary.skipped << name
+                            break
+                    }
+                }
+                // 4. Sort the lists for consistent output
+                summary.failed.sort()
+                summary.broken.sort()
+                summary.skipped.sort()
+                // 5. Write to file and Print EXACT JSON format
+                writeJSON file: 'dsm_browser_allure_summary.json', json: summary, pretty: 4
+                // This prints the JSON blob exactly as you requested
+                echo "Allure Summary JSON:\n" + readFile('dsm_browser_allure_summary.json')
+            }
+            echo "Job name: ${env.JOB_NAME}"
+            echo "Logic added to get pass/error/fail/skip/total count from xml file of each test run : [${BUILD_JOB_NUMBERS.first()},...,${BUILD_JOB_NUMBERS.last()}]"
+            for (job_num in BUILD_JOB_NUMBERS) {
+                echo "Job num : ${job_num}"
+                copyArtifacts(
+                projectName: 'dsm-frontend-master-regression-test',
+                selector: specific(job_num),
+                optional: true
+                );
+        //      sh 'ls'
+                echo "dsm/result.xml File exists? ${fileExists('dsm/result.xml')}"
+
+                if (fileExists('dsm/result.xml')) {
+                    echo "Inside result.xml file to calculate pass/fail count"
+                    def resultXml = readFile('dsm/result.xml')
+        //          echo "is resultXml string : ${resultXml instanceof String}"
+                    def errorCountMatch = resultXml =~ /errors=\"(\d+)\"/
+                    errorCountMatch = errorCountMatch ? errorCountMatch[0][1] as Integer : null
+                    def failCountMatch = resultXml =~ /failures=\"(\d+)\"/
+                    failCountMatch = failCountMatch ? failCountMatch[0][1] as Integer : null
+                    def skippedCountMatch = resultXml =~ /skipped=\"(\d+)\"/
+                    skippedCountMatch = skippedCountMatch ? skippedCountMatch[0][1] as Integer : null
+                    def testsCountMatch = resultXml =~ /tests=\"(\d+)\"/
+                    testsCountMatch = testsCountMatch ? testsCountMatch[0][1] as Integer : null
+                    errorCount += errorCountMatch
+                    failCount += failCountMatch
+                    skipCount += skippedCountMatch
+                    testCount += testsCountMatch
+                }
+            }
+        //      echo "before total errorCount = ${errorCount}"
+            echo "before total testCount = ${testCount}"
+            passCount = testCount - (errorCount + failCount + skipCount)
+            passPercent = passCount > 0 ? (passCount / (testCount - skipCount)) * 100 : 0.00
+            def passPercentClass = passPercent.getClass()
+            int scale = 2
+            roundedNumber = String.format("%.${scale}f", passPercent)
+            TEST_URL = env.TEST_URL
+            echo "total passCount = ${passCount}"
+            echo "total passPercent = ${passPercent}"
+            echo "rounded passPercent % = ${roundedNumber}"
+            echo "total errorCount = ${errorCount}"
+            echo "total failCount = ${failCount}"
+            echo "total skipCount = ${skipCount}"
+            echo "total testCount = ${testCount}"
+            echo "TEST_URL = ${TEST_URL}"
+            echo "Current Job URL2: ${env.BUILD_URL}"
+            if (!BUILD_VERSION) {
+                apiUrl = new URL(TEST_URL + "/sys/v1/version")
+                output = new JsonSlurperClassic().parseText(apiUrl.text)
+                echo "output = '${output}'"
+                BUILD_VERSION = output["version"]
+            }
+            echo "BUILD_VERSION = '${BUILD_VERSION}'"
+
+            if (passPercent > 90) {
+                script {
+                        slackSend color: "good",
+                        message: "dsm-fe-pipeline \n*TESTBED*: "+ TEST_URL + '\n*BROWSER*: ' + BROWSER + '\n*BUILD*: ' + BUILD_VERSION + '\n*BRANCH*: '+ BRANCH + '\n*More Info on JobURL*: ' + env.BUILD_URL + '\n*REPORT*: ' + env.BUILD_URL + 'allure/' + '\n*PASS =* ' + passCount + '\n*ERROR =* ' + errorCount + '\n*FAIL =* ' + failCount + '\n*SKIP =* ' + skipCount + '\n*TOTAL TESTS =* ' + testCount + '\n*PASS % =* ' + roundedNumber ,
+                        tokenCredentialId: '9c68860f-49e4-4bfd-81ca-0cdc58232e72',
+                        teamDomain: 'fortanix',
+                        baseUrl: 'https://hooks.slack.com/services/',
+                        channel: '#dsm-frontend-regression',
+                        username: "ONPREM FRONTEND NIGHTLY"
+                }
+            }
+        }
+    }
+}

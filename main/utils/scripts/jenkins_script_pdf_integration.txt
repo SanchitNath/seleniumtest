@@ -1,0 +1,60 @@
+stage('Post-Process Allure Results') {
+    steps {
+        script {
+            echo "Processing raw Allure results to create the required suites.csv"
+            def ALLURE_CMD = "/home/jenkins/tools/ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation/allure_home/allure-2.29.0/bin/allure"
+            echo "Create ALLURE_CMD"
+            TEST_URL = env.TEST_URL
+            def apiUrl = new URL(TEST_URL + "/sys/v1/version")
+            echo "Attempting to fetch version"
+            def output = new groovy.json.JsonSlurperClassic().parseText(apiUrl.text)
+            echo "API output : ${output}"
+            def BUILD_VERSION = output["version"]
+            echo "BUILD_VERSION : ${BUILD_VERSION}"
+            env.BUILD_VERSION = BUILD_VERSION
+            sh """#!/bin/bash -xe
+                ${ALLURE_CMD} generate reports_new/dsm/reports/ --clean -o csv_temp_report
+                echo "Checking generated files..."
+                ls -lrth csv_temp_report/data/
+                stat -c '%n -> %s bytes' csv_temp_report/data/suites.csv
+                echo "Copying suites.csv to records.csv"
+                cp csv_temp_report/data/suites.csv helpers/records.csv
+                ls -lrth helpers/ | grep 'records.csv'
+                stat -c '%n -> %s bytes' helpers/records.csv
+                echo "Converting Allure JSON to CSV using Python script..."
+                cd dsm
+                python3 -m pip install --user pipenv
+                python3 -m pip install --upgrade pip
+                pwd
+                python3 -m pipenv install
+                python3 -m pipenv run python3 helpers/convert_allure_to_csv.py reports_new/dsm/reports/
+                ls -lh helpers/records.csv
+                wc helpers/records.csv
+                wc -l helpers/records.csv
+                echo "output : ${output}"
+                echo "BUILD_VERSION : ${BUILD_VERSION}"
+                echo "Running html_report.py to generate index.html"
+                python3 -m pipenv run python3 helpers/html_report.py "${BUILD_VERSION}" "${TEST_URL}"
+                # --- COPY LOGIC START ---
+                # Check if it exists in the HELPERS folder (dsm/helpers/)
+                if [ -f "helpers/index.html" ]; then
+                    echo "FOUND in Helpers Directory (dsm/helpers/):"
+                    ls -lh helpers/index.html
+                else
+                    echo "NOT FOUND in Helpers Directory."
+                fi
+                # If index.html is NOT in helpers, but IS in current dir, copy it.
+                if [ ! -f helpers/index.html ] && [ -f index.html ]; then
+                    echo "Copying index.html to helpers/index.html"
+                    mv index.html helpers/index.html
+                fi
+                # --- COPY LOGIC END ---
+                ls -lh helpers/index.html
+            """
+            # --- SAVE BUILD ARTIFACTS ---
+            # "fingerprint: true: Tells Jenkins to generate and record a unique MD5 checksum for these files.
+            # This helps track which build produced or used these specific files across different projects."
+            archiveArtifacts artifacts: 'helpers/records.csv, helpers/index.html', fingerprint: true
+        }
+    }
+}

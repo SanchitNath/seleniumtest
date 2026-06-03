@@ -8,3 +8,4 @@ testSuite-*
 *.html
 __pycache__/
 .env
+marker_list.txt

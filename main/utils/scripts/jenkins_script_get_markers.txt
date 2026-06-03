@@ -1,0 +1,49 @@
+stage('Prepare Environment') {
+    steps {
+        script {
+            echo "Get all markers from branch."
+            sh '''
+            echo "Current path: $(pwd)"
+            ls -lrth
+            cd utils/scripts
+            file_path="../../data/marker_list.py"
+            # Check if the file exists
+            if [ ! -e "$file_path" ]; then
+                echo "Error: File does not exist: $file_path" >&2
+                exit 1  # Exit the script with a non-zero status
+            fi
+            python3 ./get_markers.py
+            ls -lrt | grep 'marker_list.txt'
+            '''
+            // Get all the values from file and set it to "testsToExecuteFinal"
+            testsToExecuteFinal = readFile('data/marker_list.txt').trim()
+            // Output the value to console for verification
+            echo "============================================================================================"
+            echo "============================================================================================"
+            echo "Available tests from branch: ${testsToExecuteFinal}"
+            def selectedTests = params.TESTS_TO_EXECUTE ?: ''
+            echo "Tests sent through params: ${selectedTests}"
+
+            // If no params passed to run CI, assign "testsToExecuteFinal" to "TESTS_FROM_BRANCH"
+            if (selectedTests == '') {
+                TESTS_FROM_BRANCH = testsToExecuteFinal;
+                echo "TESTS_FROM_BRANCH: ${TESTS_FROM_BRANCH}"
+            }
+        }
+    }
+}
+stage('Test Execution') {
+    steps {
+        script{
+            if (TESTS_FROM_BRANCH) {
+                // Tests from branch
+                TESTS_TO_EXECUTE = TESTS_FROM_BRANCH.tokenize(',')
+                echo "TESTS_TO_EXECUTE1 => From branch"
+            } else {
+                // Tests through params
+                TESTS_TO_EXECUTE = params.TESTS_TO_EXECUTE.tokenize(',')
+                echo "TESTS_TO_EXECUTE2 => Through params"
+            }
+        }
+    }
+}

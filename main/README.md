@@ -1,60 +1,70 @@
 # Create a virtual environment
-```
-python3 -m venv venv
-source venv/bin/activate
+```bash
+  python3 -m venv venv
+  source venv/bin/activate
 ```
 
 # Now install your packages
-```
-pip install selenium pytest pytest-html pytest-xdist
+```bash
+  pip install selenium pytest pytest-html pytest-xdist
 ```
 
 # To install requirements from a file
-```
-pip install -r requirements.txt
+```bash
+  pip install -r requirements.txt
 ```
 
 # To run tests
-```
-pytest -m tests/test_*.py
+```bash
+  pytest -m marker_name
 ```
 
 # To run tests in parallel
+```bash
+  pytest -m marker_name -n auto
 ```
-pytest -m tests/test_*.py -n auto
+
+Execute via test name:
+```bash
+  pytest -k  "test_invalid_login"
+```
+
+Rerun failed tests again after completion of current state:
+```bash
+  pytest --lf
 ```
 
 # To generate allure report
-```
-pip install allure-pytest
-pytest --alluredir=reports
-allure serve reports/ which generates report to temp directory and start a web server 127.0.0.1:1234
+```bash
+  pip install allure-pytest
+  pytest --alluredir=reports
+  allure serve reports/ which generates report to temp directory and start a web server 127.0.0.1:1234
 ```
 
 # To remove reports, screenshots, and logs
-```
-\rm -rf reports screenshots logs
+```bash
+  rm -rf reports screenshots logs
 ```
 
 # To install docker
-```
-docker --version
-docker-compose --version
+```bash
+  docker --version
+  docker-compose --version
 ```
 
 # To start containers as per docker-compose.yaml
-```
-docker-compose up -d
+```bash
+  docker-compose up -d
 ```
 
 # To create and start a container from an image
-```
-docker run -d -p 8080:80 nginx
+```bash
+  docker run -d -p 8080:80 nginx
 ```
 
 # To take ss and add it in allure report
-```
-allure.attach(driver.get_screenshot_as_png(), name='ss', attachment_type=allure.attachment_type.PNG)
+```bash
+  allure.attach(driver.get_screenshot_as_png(), name='ss', attachment_type=allure.attachment_type.PNG)
 ```
 
 # pytest.ini has settings of pytest
