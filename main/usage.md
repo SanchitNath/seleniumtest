@@ -2,19 +2,22 @@
 ```
 > sudo apt update
 > sudo apt install apache2
-> mkdir -p /var/www/html/<some name>
-> chown -R root:root /var/www/html/<some name>
+> sudo mkdir -p /var/www/html/<some name>
+> sudo chown -R root:root /var/www/html/<some name>
 > sudo rm -rf /var/www/html/index.html
 ```
 ---
 ### Access Cassandara DB
 ```
-> exec into cassandra pod - kubectl exec cassandra-0 -it -- /bin/sh
+> exec into cassandra pod -> kubectl exec -it cassandra-0 -- /bin/sh
 > cqlsh -k public
 > list of all tables : describe tables; - some fields can be encrypted. 
 > describe table <table_name> - to see the table schema.
 > Eg query :  select * from auditlog_primary where acct_id =a726b731-069f-4a27-9236-d847cfea0baa;
 ```
+If columns are encrypted transparently (`TDE`) at the database layer, `cqlsh` will show them 
+normally to authorized users. If they are encrypted at the application layer before insertion, 
+the output will appear as a raw hexadecimal string or binary blob.
 ---
 ### How to connect an EC2 instance using RDP
 ```
@@ -27,7 +30,7 @@
 > Copy “Public DNS” from here
 > Copy “Username” from here
 > Click on “Get password” every time to get new password by adding the .pem file and copy it
-> Launch the reminna or any other rdp client
+> Launch Reminna or any other RDP client
 > Select new connection profile
 > Enter server name as “Public DNS” with username and password
 > Click on “Connect” button

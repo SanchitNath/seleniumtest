@@ -6,27 +6,28 @@ stage('Prepare Environment') {
             echo "Current path: $(pwd)"
             ls -lrth
             cd utils/scripts
-            file_path="../../data/marker_list.py"
+            file_path="get_markers.py"
             # Check if the file exists
             if [ ! -e "$file_path" ]; then
                 echo "Error: File does not exist: $file_path" >&2
                 exit 1  # Exit the script with a non-zero status
             fi
             python3 ./get_markers.py
+            cd ../../data
             ls -lrt | grep 'marker_list.txt'
             '''
-            // Get all the values from file and set it to "testsToExecuteFinal"
-            testsToExecuteFinal = readFile('data/marker_list.txt').trim()
+            // Get all the values from file and set it to "testsFromBranch"
+            testsFromBranch = readFile('marker_list.txt').trim()
             // Output the value to console for verification
             echo "============================================================================================"
             echo "============================================================================================"
-            echo "Available tests from branch: ${testsToExecuteFinal}"
-            def selectedTests = params.TESTS_TO_EXECUTE ?: ''
-            echo "Tests sent through params: ${selectedTests}"
+            echo "Available tests from branch: ${testsFromBranch}"
+            def testsThroughParams = params.TESTS_TO_EXECUTE ?: ''
+            echo "Tests sent through params: ${testsThroughParams}"
 
-            // If no params passed to run CI, assign "testsToExecuteFinal" to "TESTS_FROM_BRANCH"
-            if (selectedTests == '') {
-                TESTS_FROM_BRANCH = testsToExecuteFinal;
+            // If no params passed to run CI, assign "testsFromBranch" to "TESTS_FROM_BRANCH"
+            if (testsThroughParams == '') {
+                TESTS_FROM_BRANCH = testsFromBranch;
                 echo "TESTS_FROM_BRANCH: ${TESTS_FROM_BRANCH}"
             }
         }
