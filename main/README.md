@@ -51,10 +51,12 @@ Rerun failed tests again after completion of current state:
   docker --version
   docker-compose --version
 ```
+Now launch docker desktop and check if it is running or not.
 
 # To start containers as per docker-compose.yaml
 ```bash
-  docker-compose up -d
+  cd config
+  docker compose up -d
 ```
 
 # To create and start a container from an image

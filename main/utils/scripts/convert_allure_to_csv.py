@@ -5,7 +5,7 @@ import shutil
 import pandas as pd
 
 DATA_DIR = "../csv_temp_report/data"
-TEST_CASE_DIR = os.path.join(os.getcwd(), DATA_DIR, "test-cases")
+TEST_CASE_DIR = os.path.join(os.getcwd(), DATA_DIR, "../../test-cases")
 OUTPUT_FILE = os.path.join(os.getcwd(), "../helpers/records.csv")
 # Dictionary to store only the latest result for each unique test
 # Key = historyId, Value = Dictionary of row data

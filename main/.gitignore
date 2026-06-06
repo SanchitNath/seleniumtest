@@ -1,6 +1,5 @@
 **/.idea/
 venv/
-venv/.*
 reports/*
 screenshots/*
 logs/*
@@ -8,5 +7,5 @@ testSuite-*
 *.html
 __pycache__/
 .env
-usage.md
 marker_list.txt
+usage.md/*

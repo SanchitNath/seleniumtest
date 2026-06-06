@@ -1,7 +1,7 @@
 post{
     always {
         script {
-             echo "Combining Allure results 📊 into JSON summary (De-duplicated)"
+            echo "Combining Allure results into JSON summary (De-duplicated)"
             echo "Processing results to identify final test statuses..."
             // 1. Find all result files
             def files = findFiles(glob: 'reports_new/dsm/reports/*-result.json')
@@ -46,9 +46,9 @@ post{
                 summary.broken.sort()
                 summary.skipped.sort()
                 // 5. Write to file and Print EXACT JSON format
-                writeJSON file: 'dsm_browser_allure_summary.json', json: summary, pretty: 4
+                writeJSON file: 'ci_allure_summary.json', json: summary, pretty: 4
                 // This prints the JSON blob exactly as you requested
-                echo "Allure Summary JSON:\n" + readFile('dsm_browser_allure_summary.json')
+                echo "Allure Summary JSON:\n" + readFile('ci_allure_summary.json')
             }
             echo "Job name: ${env.JOB_NAME}"
             echo "Logic added to get pass/error/fail/skip/total count from xml file of each test run : [${BUILD_JOB_NUMBERS.first()},...,${BUILD_JOB_NUMBERS.last()}]"
@@ -108,12 +108,12 @@ post{
             if (passPercent > 90) {
                 script {
                         slackSend color: "good",
-                        message: "dsm-fe-pipeline \n*TESTBED*: "+ TEST_URL + '\n*BROWSER*: ' + BROWSER + '\n*BUILD*: ' + BUILD_VERSION + '\n*BRANCH*: '+ BRANCH + '\n*More Info on JobURL*: ' + env.BUILD_URL + '\n*REPORT*: ' + env.BUILD_URL + 'allure/' + '\n*PASS =* ' + passCount + '\n*ERROR =* ' + errorCount + '\n*FAIL =* ' + failCount + '\n*SKIP =* ' + skipCount + '\n*TOTAL TESTS =* ' + testCount + '\n*PASS % =* ' + roundedNumber ,
+                        message: "product-pipeline \n*TESTBED*: "+ TEST_URL + '\n*BROWSER*: ' + BROWSER + '\n*BUILD*: ' + BUILD_VERSION + '\n*BRANCH*: '+ BRANCH + '\n*More Info on JobURL*: ' + env.BUILD_URL + '\n*REPORT*: ' + env.BUILD_URL + 'allure/' + '\n*PASS =* ' + passCount + '\n*ERROR =* ' + errorCount + '\n*FAIL =* ' + failCount + '\n*SKIP =* ' + skipCount + '\n*TOTAL TESTS =* ' + testCount + '\n*PASS % =* ' + roundedNumber ,
                         tokenCredentialId: '9c68860f-49e4-4bfd-81ca-0cdc58232e72',
-                        teamDomain: 'fortanix',
+                        teamDomain: 'qa',
                         baseUrl: 'https://hooks.slack.com/services/',
-                        channel: '#dsm-frontend-regression',
-                        username: "ONPREM FRONTEND NIGHTLY"
+                        channel: '#dummy-channel',
+                        username: "CI FRONTEND NIGHTLY"
                 }
             }
         }
