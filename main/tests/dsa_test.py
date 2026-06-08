@@ -1,19 +1,15 @@
+import csv
 import glob
 import os
 from collections import defaultdict, Counter
 from itertools import permutations
-
-import pytest
+import pandas as pd
 import requests
 
 
-# @pytest.mark.DSA1
-@pytest.mark.DSA
 class TestDSA:
-    def length_of_longest_substring(s):
-        l = 0
-        max_len = 0
-        index = 0
+    def length_of_longest_substring(self, s: str) -> int:
+        l, max_len, index = 0, 0, 0
         seen = set()
         for r in range(len(s)):
             while s[r] in seen:
@@ -27,10 +23,8 @@ class TestDSA:
         print(longest_sub)
         print(max_len)
         return max_len
-    print("---Longest substring and it's length---")
-    length_of_longest_substring('bccabcbb')
 
-    def merge_sorted_arrays(arr1, arr2):
+    def merge_sorted_arrays(self, arr1, arr2):
         i = 0
         j = 0
         merged = []
@@ -50,10 +44,8 @@ class TestDSA:
         print(f"Array with duplicates = {merged}")
         merged = list(set(merged))
         return merged
-    print("---Merge sorted array---")
-    print(merge_sorted_arrays([2,3,4,5], [1,3,5,6,7]))
 
-    def count_error_logs_decreasing_order_count_alp_name():
+    def count_error_logs_decreasing_order_count_alp_name(self):
         counts = defaultdict(int)
         path = os.path.join(os.getcwd(), "../data/*.txt")
         for log_file in glob.glob(path):
@@ -68,10 +60,8 @@ class TestDSA:
         print(f"Sorted counts = {sorted_counts}")
         for filename, count in sorted_counts:
             print(f"filename = {filename}, count = {count}")
-    print("---Count error logs as per decreasing order count but alphabetical file name---")
-    count_error_logs_decreasing_order_count_alp_name()
 
-    def find_non_repeated_nos(arr):
+    def find_non_repeated_nos(self, arr: list):
         # [1,2,3,4,5,5,3,3,2]
         # O(N)
         counts = Counter(arr)
@@ -83,10 +73,8 @@ class TestDSA:
             if counts[no] == 1:
                 non_repeated.append(no)
         return non_repeated
-    print("---Non repeated no using Counter in O(N)---")
-    print(find_non_repeated_nos([1,2,3,4,5,5,3,3,2]))
 
-    def find_non_repeated_numbers(arr):
+    def find_non_repeated_numbers(self, arr: list):
         non_repeated = []
         seen = set()
         # O(N)
@@ -99,11 +87,9 @@ class TestDSA:
                 # O(1)
                 seen.add(no)
         return non_repeated
-    print("---Non repeated no using arr.count() in O(N^2)---")
-    print(find_non_repeated_numbers([1,2,3,4,5,5,3,3,2]))
 
     @staticmethod
-    def permute(str, step=0):
+    def permute(str: str, step=0):
         if step == len(str):
             print(''.join(str))
             return
@@ -115,23 +101,21 @@ class TestDSA:
             # Undo swap
             str[step], str[i] = str[i], str[step]
 
-    def test_run_permutations(self):
+    def run_permutations(self):
         print("---permute--- with T.C=O(N)")
         s = list('ABC')
         TestDSA.permute(s)
 
-    def print_permutations(s):
+    def print_permutations(self, s: str):
         for perm in permutations(s):
             print(''.join(perm))
-    print("---permute using library---  with T.C=O(N)")
-    print_permutations('AB')
 
     # Output -> Condition -> Loop
     print_perms = lambda s: [print(''.join(p)) for p in permutations(s)]
-    print("----Use lambda---")
+    print("----Using lambda---")
     print(print_perms('AB'))
 
-    def find_min_in_rotated_sorted_arr(arr):
+    def find_min_in_rotated_sorted_arr(self, arr: list):
         low, high = 0, len(arr) - 1
         while low < high:
             mid = low + (high - low)//2
@@ -140,10 +124,8 @@ class TestDSA:
             else:
                 high = mid
         return arr[low]
-    print("---find min in rotated sorted array---")
-    print(find_min_in_rotated_sorted_arr([5,6,7,8,9,0,1,2,3]))
 
-    def binary_search_in_rotated_sorted_arr(arr, target):
+    def binary_search_in_rotated_sorted_arr(self, arr: list, target: int):
         low, high = 0, len(arr) - 1
         while low <= high:
             mid = low + (high - low)//2
@@ -160,10 +142,8 @@ class TestDSA:
                 else:
                     high = mid - 1
         return -1
-    print("---binary search in rotated sorted array---")
-    print(binary_search_in_rotated_sorted_arr([7,8,9,0,1,2,3,], 2))
 
-    def binary_search_in_sorted_arr(arr, target):
+    def binary_search_in_sorted_arr(self, arr: list, target: int):
         low, high = 0, len(arr) - 1
         while low <= high:
             mid = low + (high - low)//2
@@ -174,10 +154,8 @@ class TestDSA:
             else:
                 high = mid - 1
         return -1
-    print("---binary search in sorted array---")
-    print(binary_search_in_sorted_arr([1,2,3,4,5], 5))
 
-    def check_availability(check_in, check_out):
+    def check_availability(self, check_in: str, check_out: str):
         url = 'https://automationintesting.online/api/room?'
         req_api = url + f"checkin={check_in}&checkout={check_out}"
         print(f"Req api = {req_api}")
@@ -187,7 +165,7 @@ class TestDSA:
         assert response.status_code == 200
         data = response.json()
 
-    def check_double_room(room_type, check_in, check_out):
+    def check_double_room(self, room_type: str, check_in: str, check_out: str):
         url = f'https://automationintesting.online/reservation/{room_type}?'
         room_req = url + f"checkin={check_in}&checkout={check_out}"
         room_req_resp = requests.get(room_req)
@@ -195,10 +173,7 @@ class TestDSA:
         print(f"response status code = {room_req_resp.status_code}")
         assert room_req_resp.status_code == 200
 
-    check_availability('2026-03-25', '2026-03-26')
-    check_double_room(2, '2026-03-25', '2026-03-26')
-
-    def find_second_highest(num_list):
+    def find_second_highest(self, num_list: list):
         unique_elements = []
         max_in_list = 0
         count_list = Counter(num_list)
@@ -213,7 +188,55 @@ class TestDSA:
             if num > max_in_list:
                 max_in_list = num
         return [unique_elements[-2] if max_in_list in unique_elements else unique_elements[-1]]
-    print(find_second_highest([9,18,21,26,27,29,27,26,29,30]))
-    print(find_second_highest([9,18,21,26,27,29,27,26,29,30,30]))
-    print(find_second_highest([9,18,21,26,27,29,27,26,30,30]))
-    print(find_second_highest([9,18,21,26,29,29,27,26,30]))
+
+    def read_csv(self, file_path: str):
+        path = os.path.join(os.getcwd(), file_path)
+        with open(path, 'r') as f:
+            print(f"Reading as list")
+            for line in f:
+                print(line.strip())
+            print("\n--- Resetting File Pointer ---\n")
+            # Rewind the file back to the very first character
+            f.seek(0)
+            reader = csv.DictReader(f)
+            print(f"Reading as dict")
+            for row in reader:
+                print(row)
+            # Rewind the file back to the very first character
+            f.seek(0)
+            reader = csv.reader(f)
+            print(f"Reading as row by row")
+            for row in reader:
+                print(row)
+        df = pd.read_csv(path)
+        print(f"Reading using pandas")
+        print(df.head())
+
+if __name__ == "__main__":
+    print("--- Running Manually ---")
+    test_dsa = TestDSA()
+    print("---Longest substring and it's length---")
+    test_dsa.length_of_longest_substring('bccabcbb')
+    print("---Merge sorted array---")
+    print(test_dsa.merge_sorted_arrays([2,3,4,5], [1,3,5,6,7]))
+    print("---Count error logs as per decreasing order count but alphabetical file name---")
+    test_dsa.count_error_logs_decreasing_order_count_alp_name()
+    print("---Non repeated no using Counter in O(N)---")
+    print(test_dsa.find_non_repeated_nos([1,2,3,4,5,5,3,3,2]))
+    print("---Non repeated no using arr.count() in O(N^2)---")
+    print(test_dsa.find_non_repeated_numbers([1,2,3,4,5,5,3,3,2]))
+    print("---permute using library---  with T.C=O(N)")
+    test_dsa.print_permutations('AB')
+    print("---find min in rotated sorted array---")
+    print(test_dsa.find_min_in_rotated_sorted_arr([5,6,7,8,9,0,1,2,3]))
+    print("---binary search in rotated sorted array---")
+    print(test_dsa.binary_search_in_rotated_sorted_arr([7,8,9,0,1,2,3,], 2))
+    print("---binary search in sorted array---")
+    print(test_dsa.binary_search_in_sorted_arr([1,2,3,4,5], 5))
+    test_dsa.check_availability('2026-03-25', '2026-03-26')
+    test_dsa.check_double_room(2, '2026-03-25', '2026-03-26')
+    print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,29,30]))
+    print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,29,30,30]))
+    print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,30,30]))
+    print(test_dsa.find_second_highest([9,18,21,26,29,29,27,26,30]))
+    test_dsa.read_csv(file_path="../helpers/records.csv")

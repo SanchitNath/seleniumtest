@@ -8,4 +8,4 @@ testSuite-*
 __pycache__/
 .env
 marker_list.txt
-usage.md/*
+usage.md

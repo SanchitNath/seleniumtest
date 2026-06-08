@@ -9,6 +9,7 @@ import time
 class CommonMethods:
     def __init__(self, driver: webdriver.Chrome):
         self.driver = driver
+        self.driver.implicitly_wait(10)  # Set a default implicit wait
 
     def wait_for_element(self, locator, timeout=10):
         """Wait for an element to be present in the DOM."""

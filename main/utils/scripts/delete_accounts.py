@@ -4,18 +4,20 @@ import sys
 import time
 import multiprocessing
 from dsm.roche.util.api import API
-# from dsm.roche.util.logger_util import get_logger
 
-# logger = get_logger(__name__)
-
-host = os.getenv("FORTANIX_HOST")
+host = os.getenv("HOST")
 username = os.getenv("UserName")
 password = os.getenv("Password")
 
 
-# host = "https://dsm-qa-onprem.fortanix.net/"
-# username = "qa1@fortanix.com"
+# host = "https://test.domain.net/"
+# username = "testuser@domain.com"
 # password = "********"
+
+class SomeException(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
 
 
 # --- Worker Initialization ---
@@ -60,11 +62,13 @@ def run_script(account_id):
 
         # Access the global API instance initialized in worker_init
         if api.get_account_name(account_id) not in ["", "Existing acc", "account does not exist"]:
-            api.select_account(account_id)
+            local_api = API(host, username, password)
+            local_api.select_account(account_id)
             time.sleep(1)
             print("Attempting to delete account before object removal...")
-            api.delete_account(account_id)
+            local_api.delete_account(account_id)
 
+        api.select_account(account_id)
         api.remove_account_objects_delete_account(account_id)
     except Exception as e:
         # Log the error, but the worker process MUST return normally or raise
@@ -96,7 +100,8 @@ def main():
         try:
             api_main.accept_reject_accounts_invite(False)
         except Exception as e:
-            print(f"accept_reject_accounts_invite failed: {e}")
+            print(f"accept_reject_accounts_invite failed: {e}", exc_info=True)
+            raise SomeException("Failed to accept/reject account invites")
 
         if len(accounts) >= max_acc_skip:
             print(f"Starting pool with {processes} workers to process {len(accounts)} accounts...")
@@ -135,7 +140,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # multiprocessing.set_start_method("spawn", force=True)
+    multiprocessing.set_start_method("spawn", force=True)
     """
     [multiprocessing.set_start_method("spawn", force=True)]
     This makes ALL multiprocessing calls in the script (including Pool())

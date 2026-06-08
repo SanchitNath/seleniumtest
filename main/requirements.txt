@@ -1,7 +1,13 @@
-python-dotenv==*
+python-dotenv
 pytest==8.1.1
 pytest-xdist==3.5.0
 requests==2.31.0
 selenium==4.18.1
-pytest-html==*
+pytest-html
 allure-pytest>=2.16.0
+pandas
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+mysql-connector-python

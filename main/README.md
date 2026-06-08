@@ -24,9 +24,10 @@
   pytest -m marker_name -n auto
 ```
 
-Execute via test name:
+Execute via test name or class name:
 ```bash
   pytest -k  "test_invalid_login"
+  pytest -k "TestLogin"
 ```
 
 Rerun failed tests again after completion of current state:
