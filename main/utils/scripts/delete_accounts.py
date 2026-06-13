@@ -4,11 +4,13 @@ import sys
 import time
 import multiprocessing
 from dsm.roche.util.api import API
+from main.utils.logger import LogGen
 
 host = os.getenv("HOST")
 username = os.getenv("UserName")
 password = os.getenv("Password")
 
+logger = LogGen.loggen()
 
 # host = "https://test.domain.net/"
 # username = "testuser@domain.com"
@@ -100,7 +102,7 @@ def main():
         try:
             api_main.accept_reject_accounts_invite(False)
         except Exception as e:
-            print(f"accept_reject_accounts_invite failed: {e}", exc_info=True)
+            logger.error(f"accept_reject_accounts_invite failed: {e}", exc_info=True)
             raise SomeException("Failed to accept/reject account invites")
 
         if len(accounts) >= max_acc_skip:
@@ -140,6 +142,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # Windows & macOS: spawn is the default start method.
+    # Linux: fork is the default, but you can explicitly switch to spawn.
     multiprocessing.set_start_method("spawn", force=True)
     """
     [multiprocessing.set_start_method("spawn", force=True)]

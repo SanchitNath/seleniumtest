@@ -7,8 +7,6 @@ import datetime
 # 1. SETUP & CONFIG #
 # ----------------- #
 
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-# NOTE: Removed the line above since we are assuming all external dependencies are out.
 
 TEST_URL = os.getenv("TEST_URL")
 BUILD_NUMBER = os.getenv("BUILD_NUMBER")
@@ -38,7 +36,6 @@ skip_count = 0
 error_count = 0
 
 # NOTE: Allure's standard columns are case-sensitive: 'Status', 'Start Time', 'Suite', 'Name'
-COLUMNS = ["#", "Status", "Start Time", "Suite", "Name"]
 
 try:
     with open(csv_path, mode="r", newline="", encoding="utf-8") as f:

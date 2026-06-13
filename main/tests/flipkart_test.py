@@ -1,8 +1,6 @@
 import pytest
-import requests
 import os
-from pages.flipkart_page import Flipkart
-from utils.logger import LogGen
+from main.pages.flipkart_page import Flipkart
 
 @pytest.mark.FlipkartTest
 @pytest.mark.FlipkartTest1

@@ -13,7 +13,8 @@ unique_cases = {}
 print(f"Reading test cases from: {TEST_CASE_DIR}")
 
 if os.path.exists('reports'):
-    print("In")
+    # os.walk() is a built-in Python function used to recursively traverse directories.
+    # It generates file and directory names in a directory tree by walking either top-down or bottom-up
     shutil.copytree('reports', TEST_CASE_DIR, dirs_exist_ok=True)
 for root, _, files in os.walk(TEST_CASE_DIR):
     for file in files:

@@ -1,6 +1,6 @@
 import os
 import shutil
-from utils.logger import LogGen
+from main.utils.logger import LogGen
 import pytest
 from dotenv import load_dotenv
 

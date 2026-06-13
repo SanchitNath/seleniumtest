@@ -6,8 +6,13 @@ from itertools import permutations
 import pandas as pd
 import requests
 
+from main.utils.logger import LogGen
+
 
 class TestDSA:
+    def __init__(self):
+        self.logger = LogGen.loggen()
+
     def length_of_longest_substring(self, s: str) -> int:
         l, max_len, index = 0, 0, 0
         seen = set()
@@ -20,8 +25,8 @@ class TestDSA:
                 max_len = r - l + 1
                 index = l
         longest_sub = s[index : index + max_len]
-        print(longest_sub)
-        print(max_len)
+        self.logger.info(longest_sub)
+        self.logger.info(max_len)
         return max_len
 
     def merge_sorted_arrays(self, arr1, arr2):
@@ -41,7 +46,7 @@ class TestDSA:
         while j < len(arr2):
             merged.append(arr2[j])
             j += 1
-        print(f"Array with duplicates = {merged}")
+        self.logger.info(f"Array with duplicates = {merged}")
         merged = list(set(merged))
         return merged
 
@@ -51,15 +56,15 @@ class TestDSA:
         for log_file in glob.glob(path):
             with open(log_file, 'r') as f:
                 for lines in f:
-                    # print(f"Lines = {lines}")
+                    # self.logger.info(f"Lines = {lines}")
                     parts = lines.strip().split('|')
                     if len(parts) >= 3 and parts[1] == 'ERROR':
                         filename = parts[2]
                         counts[filename] += 1
         sorted_counts = sorted(counts.items(), key=lambda x: (-x[1], x[0]))
-        print(f"Sorted counts = {sorted_counts}")
+        self.logger.info(f"Sorted counts = {sorted_counts}")
         for filename, count in sorted_counts:
-            print(f"filename = {filename}, count = {count}")
+            self.logger.info(f"filename = {filename}, count = {count}")
 
     def find_non_repeated_nos(self, arr: list):
         # [1,2,3,4,5,5,3,3,2]
@@ -89,31 +94,30 @@ class TestDSA:
         return non_repeated
 
     @staticmethod
-    def permute(str: str, step=0):
-        if step == len(str):
-            print(''.join(str))
+    def permute(data_list: str, step=0, logger=None):
+        if step == len(data_list):
+            output_str = ''.join(data_list)
+            if logger:
+                logger.info(output_str)
+            else:
+                print(output_str)
             return
-        for i in range(step, len(str)):
-            # Swap in-place
-            str[step], str[i] = str[i], str[step]
-            # Recursive call
-            TestDSA.permute(str, step+1)
-            # Undo swap
-            str[step], str[i] = str[i], str[step]
+        for i in range(step, len(data_list)):
+            data_list[step], data_list[i] = data_list[i], data_list[step]
+            TestDSA.permute(data_list, step + 1, logger)
+            data_list[step], data_list[i] = data_list[i], data_list[step]
 
-    def run_permutations(self):
-        print("---permute--- with T.C=O(N)")
-        s = list('ABC')
-        TestDSA.permute(s)
+    # def run_permutations(self):
+    #     self.logger.info("---permute--- with T.C=O(N)")
+    #     s = list('ABC')
+    #     TestDSA.permute(s, logger=self.logger)
 
     def print_permutations(self, s: str):
         for perm in permutations(s):
-            print(''.join(perm))
+            self.logger.info(''.join(perm))
 
     # Output -> Condition -> Loop
     print_perms = lambda s: [print(''.join(p)) for p in permutations(s)]
-    print("----Using lambda---")
-    print(print_perms('AB'))
 
     def find_min_in_rotated_sorted_arr(self, arr: list):
         low, high = 0, len(arr) - 1
@@ -158,10 +162,10 @@ class TestDSA:
     def check_availability(self, check_in: str, check_out: str):
         url = 'https://automationintesting.online/api/room?'
         req_api = url + f"checkin={check_in}&checkout={check_out}"
-        print(f"Req api = {req_api}")
+        self.logger.info(f"Req api = {req_api}")
         response = requests.get(req_api)
-        print(f"response = {response}")
-        print(f"response status = {response.status_code}")
+        self.logger.info(f"response = {response}")
+        self.logger.info(f"response status = {response.status_code}")
         assert response.status_code == 200
         data = response.json()
 
@@ -169,8 +173,8 @@ class TestDSA:
         url = f'https://automationintesting.online/reservation/{room_type}?'
         room_req = url + f"checkin={check_in}&checkout={check_out}"
         room_req_resp = requests.get(room_req)
-        print(f"response = {room_req_resp} from req = {room_req}")
-        print(f"response status code = {room_req_resp.status_code}")
+        self.logger.info(f"response = {room_req_resp} from req = {room_req}")
+        self.logger.info(f"response status code = {room_req_resp.status_code}")
         assert room_req_resp.status_code == 200
 
     def find_second_highest(self, num_list: list):
@@ -180,7 +184,7 @@ class TestDSA:
         for num in num_list:
             if count_list[num] < 2:
                 unique_elements.append(num)
-        print(unique_elements)
+        self.logger.info(unique_elements)
         if len(unique_elements) < 2:
             return "Not enough numbers"
         # max_in_list = sorted(list(num_list))[-1]
@@ -192,10 +196,10 @@ class TestDSA:
     def read_csv(self, file_path: str):
         path = os.path.join(os.getcwd(), file_path)
         with open(path, 'r') as f:
-            print(f"Reading as list")
+            print(f"Reading as row by row")
             for line in f:
                 print(line.strip())
-            print("\n--- Resetting File Pointer ---\n")
+            self.logger.info("\n--- Resetting File Pointer ---\n")
             # Rewind the file back to the very first character
             f.seek(0)
             reader = csv.DictReader(f)
@@ -205,17 +209,19 @@ class TestDSA:
             # Rewind the file back to the very first character
             f.seek(0)
             reader = csv.reader(f)
-            print(f"Reading as row by row")
+            print(f"Reading as list")
             for row in reader:
                 print(row)
         df = pd.read_csv(path)
-        print(f"Reading using pandas")
         print(df.head())
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.width', 1000)
+        print(f"Reading using pandas to view n rows")
+        print(df.iloc[:, :6].head())
 
 if __name__ == "__main__":
-    print("--- Running Manually ---")
     test_dsa = TestDSA()
-    print("---Longest substring and it's length---")
+    print("--- Running Manually ---")
     test_dsa.length_of_longest_substring('bccabcbb')
     print("---Merge sorted array---")
     print(test_dsa.merge_sorted_arrays([2,3,4,5], [1,3,5,6,7]))
@@ -226,7 +232,9 @@ if __name__ == "__main__":
     print("---Non repeated no using arr.count() in O(N^2)---")
     print(test_dsa.find_non_repeated_numbers([1,2,3,4,5,5,3,3,2]))
     print("---permute using library---  with T.C=O(N)")
-    test_dsa.print_permutations('AB')
+    # test_dsa.print_permutations('AB')
+    print("----Using lambda---")
+    TestDSA.print_perms('AB')
     print("---find min in rotated sorted array---")
     print(test_dsa.find_min_in_rotated_sorted_arr([5,6,7,8,9,0,1,2,3]))
     print("---binary search in rotated sorted array---")
@@ -234,9 +242,9 @@ if __name__ == "__main__":
     print("---binary search in sorted array---")
     print(test_dsa.binary_search_in_sorted_arr([1,2,3,4,5], 5))
     test_dsa.check_availability('2026-03-25', '2026-03-26')
-    test_dsa.check_double_room(2, '2026-03-25', '2026-03-26')
+    test_dsa.check_double_room('2', '2026-03-25', '2026-03-26')
     print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,29,30]))
     print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,29,30,30]))
     print(test_dsa.find_second_highest([9,18,21,26,27,29,27,26,30,30]))
     print(test_dsa.find_second_highest([9,18,21,26,29,29,27,26,30]))
-    test_dsa.read_csv(file_path="../helpers/records.csv")
+    test_dsa.read_csv(file_path="../helpers/emp_records.csv")

@@ -2,7 +2,7 @@ import os
 
 import allure
 import requests
-from pages.base_page import BasePage
+from main.pages.base_page import BasePage
 
 
 class Flipkart(BasePage):

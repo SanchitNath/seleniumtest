@@ -4,12 +4,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 import time
+from main.utils.logger import LogGen
 
 
 class CommonMethods:
     def __init__(self, driver: webdriver.Chrome):
         self.driver = driver
         self.driver.implicitly_wait(10)  # Set a default implicit wait
+        self.logger = LogGen.loggen()
 
     def wait_for_element(self, locator, timeout=10):
         """Wait for an element to be present in the DOM."""
@@ -62,7 +64,7 @@ class CommonMethods:
             response = requests.head(url, allow_redirects=True)
             return response.status_code
         except requests.RequestException as e:
-            print(f"Error checking link: {e}")
+            self.logger.error(f"Error checking link: {e}")
             return None
 
     def check_req_bad_request(self, url):
@@ -71,7 +73,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 400
         except requests.RequestException as e:
-            print(f"Error checking bad request: {e}")
+            self.logger.error(f"Error checking bad request: {e}")
             return False
 
     def check_req_unauthorized(self, url):
@@ -80,7 +82,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 401
         except requests.RequestException as e:
-            print(f"Error checking unauthorized request: {e}")
+            self.logger.error(f"Error checking unauthorized request: {e}")
             return False
 
     def check_req_payment_required(self, url):
@@ -89,7 +91,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 402
         except requests.RequestException as e:
-            print(f"Error checking payment required request: {e}")
+            self.logger.error(f"Error checking payment required request: {e}")
             return False
 
     def check_req_forbidden(self, url):
@@ -98,7 +100,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 403
         except requests.RequestException as e:
-            print(f"Error checking forbidden request: {e}")
+            self.logger.error(f"Error checking forbidden request: {e}")
             return False
 
     def check_req_not_found(self, url):
@@ -107,7 +109,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 404
         except requests.RequestException as e:
-            print(f"Error checking not found request: {e}")
+            self.logger.error(f"Error checking not found request: {e}")
             return False
 
     def check_req_method_not_allowed(self, url):
@@ -116,7 +118,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 405
         except requests.RequestException as e:
-            print(f"Error checking method not allowed request: {e}")
+            self.logger.error(f"Error checking method not allowed request: {e}")
             return False
 
     def check_req_not_acceptable(self, url):
@@ -125,7 +127,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 406
         except requests.RequestException as e:
-            print(f"Error checking not acceptable request: {e}")
+            self.logger.error(f"Error checking not acceptable request: {e}")
             return False
 
     def check_req_proxy_authentication_required(self, url):
@@ -134,7 +136,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 407
         except requests.RequestException as e:
-            print(f"Error checking proxy authentication required request: {e}")
+            self.logger.error(f"Error checking proxy authentication required request: {e}")
             return False
 
     def check_request_timeout(self, url):
@@ -143,7 +145,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 408
         except requests.RequestException as e:
-            print(f"Error checking request timeout: {e}")
+            self.logger.error(f"Error checking request timeout: {e}")
             return False
 
     def check_req_conflict(self, url):
@@ -152,7 +154,7 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 409
         except requests.RequestException as e:
-            print(f"Error checking conflict request: {e}")
+            self.logger.error(f"Error checking conflict request: {e}")
             return False
 
     def check_req_gone(self, url):
@@ -161,5 +163,5 @@ class CommonMethods:
             response = requests.get(url)
             return response.status_code == 410
         except requests.RequestException as e:
-            print(f"Error checking gone request: {e}")
+            self.logger.error(f"Error checking gone request: {e}")
             return False
